@@ -1,0 +1,82 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = "mysql://root:@localhost:3306/topup"
+}
+
+model Products {
+  id          Int        @id @default(autoincrement())
+  name        String?
+  slug        String?    @unique
+  stock       Int
+  description String
+  image       String?    @unique
+  price       Int
+  category    Categories @relation(fields: [categoryId], references: [id])
+  categoryId  Int
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  Nominal     Nominal[]
+}
+
+model Categories {
+  id        Int        @id @default(autoincrement())
+  name      String?
+  slug      String?    @unique
+  Products  Products[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime
+}
+
+model Nominal {
+  id        Int      @id @default(autoincrement())
+  name      String?
+  price     String?
+  product   Products @relation(fields: [productId], references: [id])
+  productId Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime
+}
+
+model Role {
+  id        Int      @id @default(autoincrement())
+  name      String?
+  User      User[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime
+}
+
+model User {
+  id           Int      @id @default(autoincrement())
+  name         String?
+  username     String   @unique
+  email        String   @unique
+  password     String?
+  refreshToken String?
+  roleId       Int
+  role         Role     @relation(fields: [roleId], references: [id])
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime?
+}
+
+// model User {
+//   id        Int     @default(autoincrement()) @id
+//   email     String  @unique
+//   username  String  @unique
+//   name      String?
+//   posts     Post[]
+// }
+
+// model Post {
+//   id        Int       @default(autoincrement()) @id
+//   content   String
+//   author    User?     @relation(fields: [authorId], references: [id])
+//   authorId  Int?
+//   createdAt DateTime  @default(now())
+// }
